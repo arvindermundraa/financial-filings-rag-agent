@@ -9,7 +9,7 @@ hybrid retrieval, BM25 plus dense vectors fused with reciprocal rank fusion, and
 search tool and a calculator tool and has to cite the pages it used. I measured retrieval on
 FinanceBench, 150 analyst questions with gold evidence pages. Searching all filings at once only
 found the right page in the top 5 for 11% of questions. Adding a router that reads the company and
-fiscal year from the question, plus finance synonym expansion, took that to 56%."
+fiscal year from the question, plus finance synonym expansion, took that to 58%."
 
 ## 3-minute walkthrough (follow the data)
 
@@ -38,9 +38,9 @@ fiscal year from the question, plus finance synonym expansion, took that to 56%.
 
 | | hit@5 | MRR@10 |
 |---|---|---|
-| raw question, all filings, hybrid | 0.113 | 0.082 |
-| processed + routed, hybrid (default) | 0.560 | 0.407 |
-| true filing given (upper bound) | 0.687 | 0.495 |
+| raw question, all filings, hybrid | 0.107 | 0.081 |
+| processed + routed, hybrid (default) | 0.580 | 0.408 |
+| true filing given (upper bound) | 0.720 | 0.511 |
 
 Router: finds the company 89% of the time, the exact filing 68%. Retrieval p50 is under 4 ms.
 

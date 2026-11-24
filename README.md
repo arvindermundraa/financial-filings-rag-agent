@@ -14,28 +14,31 @@ question ─► query processing ─► router ─► hybrid retrieval ─► ag
 
 ## Results (retrieval, offline, reproducible)
 
-150 FinanceBench questions, 84 filings, 11,948 pages, 34,113 chunks. A hit means a gold evidence
+150 FinanceBench questions, 84 filings, 11,948 pages, 34,110 chunks. A hit means a gold evidence
 page is among the top-k *pages* returned. Full table: [`results/retrieval_eval.md`](results/retrieval_eval.md).
 
 | setup | hit@1 | hit@5 | hit@10 | MRR@10 |
 |---|---|---|---|---|
-| Raw question, search all filings, hybrid | 0.053 | 0.113 | 0.160 | 0.082 |
-| + query cleaning and finance synonyms | 0.040 | 0.140 | 0.213 | 0.084 |
-| + company / fiscal-period router (**default pipeline**) | **0.287** | **0.560** | **0.627** | **0.407** |
-| Upper bound: true filing given, processed query, hybrid | 0.340 | 0.687 | 0.767 | 0.495 |
+| Raw question, search all filings, hybrid | 0.053 | 0.107 | 0.173 | 0.081 |
+| + query cleaning and finance synonyms | 0.040 | 0.160 | 0.233 | 0.088 |
+| + company / fiscal-period router (**default pipeline**) | **0.300** | **0.580** | **0.613** | **0.408** |
+| Upper bound: true filing given, processed query, hybrid | 0.373 | 0.720 | 0.760 | 0.511 |
 
 What the numbers say:
 - **Searching everything at once fails.** Filings from different companies and years use the same
   headings and line items, so the right page is buried among thousands of near-duplicates.
 - **Routing is the biggest lever.** Reading the company and fiscal period out of the question and
-  filtering to that filing raises hit@5 from 0.14 to 0.56. The router finds the company for 89% of
-  questions and the exact filing for 68%; the remaining gap to the 0.687 upper bound is routing misses.
+  filtering to that filing raises hit@5 from 0.16 to 0.58. The router finds the company for 89% of
+  questions and the exact filing for 68%; the remaining gap to the 0.720 upper bound is routing misses.
 - **Query processing matters once the search is scoped.** With the true filing given, cleaning plus
   finance synonyms ("capex" → "purchases of property, plant and equipment") lifts hybrid hit@5 from
-  0.393 to 0.687.
+  0.427 to 0.720.
 - **Hybrid wins on ranking quality.** In the routed setting, hybrid has the best hit@1 and MRR. BM25
   alone is close because filings reuse exact line-item wording.
 - Retrieval latency is a few milliseconds per query on a laptop CPU (p50 under 4 ms).
+
+Numbers are from a clean run on 2026-11-24 (pypdf 7.1.1, scikit-learn 1.9.1). Other library
+versions extract and factorize slightly differently, so expect changes in the second decimal.
 
 Caveat: the synonym list was written from standard financial-statement vocabulary, not tuned on
 individual questions, but there is no separate held-out set; all numbers are on the same 150 questions.
