@@ -1,5 +1,8 @@
 export PYTHONPATH := src
 
+# "data" is also a folder name, so every target must be phony or make skips it.
+.PHONY: setup data index eval test serve
+
 setup:
 	pip install -r requirements-dev.txt
 

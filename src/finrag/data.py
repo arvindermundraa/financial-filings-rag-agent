@@ -53,11 +53,14 @@ def extract_pages(workers: int = 2) -> int:
     """Write one JSON line per filing page to data/pages.jsonl."""
     pdfs = sorted(str(p) for p in config.PDF_DIR.glob("*.pdf"))
     n = 0
-    with ProcessPoolExecutor(workers) as pool, open(config.PAGES_PATH, "w") as out:
+    # Write to a temp file and rename at the end, so a failed run never leaves a partial corpus.
+    tmp = config.PAGES_PATH.with_suffix(".jsonl.tmp")
+    with ProcessPoolExecutor(workers) as pool, open(tmp, "w") as out:
         for pages in pool.map(_extract, pdfs):
             for p in pages:
                 out.write(json.dumps(p) + "\n")
                 n += 1
+    tmp.replace(config.PAGES_PATH)
     print(f"extracted {n} pages from {len(pdfs)} filings")
     return n
 
